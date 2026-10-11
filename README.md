@@ -95,7 +95,7 @@ flowchart LR
 
 For a frozen pretrained weight $W_0 \in \mathbb{R}^{d \times k}$, full fine-tuning learns a dense update $\Delta W \in \mathbb{R}^{d \times k}$. LoRA constrains the update to rank $r \ll \min(d,k)$:
 
-$$\Delta W = \frac{\alpha}{r} B A, \qquad B \in \mathbb{R}^{d \times r},\; A \in \mathbb{R}^{r \times k}$$
+$$\Delta W = \frac{\alpha}{r} B A, \qquad B \in \mathbb{R}^{d \times r}, \quad A \in \mathbb{R}^{r \times k}$$
 
 $$h = W_0 x + \Delta W x = W_0 x + \frac{\alpha}{r} B A x$$
 
@@ -110,7 +110,7 @@ The frozen $W_0$ is stored in 4-bit. During the forward pass each layer dequanti
 
 In the original QLoRA paper the 4-bit format is **NormalFloat4 (NF4)**: 16 levels placed at quantiles of $\mathcal{N}(0,1)$,
 
-$$q_i = \tfrac{1}{2}\left(Q_X\!\left(\tfrac{i}{16}\right) + Q_X\!\left(\tfrac{i+1}{16}\right)\right),$$
+$$q_i = \tfrac{1}{2}\left(Q_X\left(\tfrac{i}{16}\right) + Q_X\left(\tfrac{i+1}{16}\right)\right),$$
 
 with **double quantization** that stores the per-block scales (block size 64) in 8 bits with a second-level block size of 256. Per-parameter metadata overhead drops from $32/64 = 0.5$ bits to
 
@@ -122,7 +122,7 @@ $$\frac{8}{64} + \frac{32}{64 \cdot 256} \approx 0.127 \text{ bits}.$$
 
 Matrix multiplication distributes over addition, so
 
-$$W_0 x + \tfrac{\alpha}{r} B A x = \left(W_0 + \tfrac{\alpha}{r} B A\right) x = W_{\text{fused}}\, x.$$
+$$W_0 x + \tfrac{\alpha}{r} B A x = \left(W_0 + \tfrac{\alpha}{r} B A\right) x = W_{\text{fused}} x.$$
 
 `fuser.py` computes $W_{\text{fused}}$ once, so inference needs no extra matmuls. `fuse_weights()` is a NumPy reference implementation, and the unit tests check that the fused output equals the adapter forward pass. When the base is 4-bit, `mlx_lm.fuse` re-quantizes the merged weights, which introduces a small rounding error. Use `--dequantize` to export full-precision merged weights.
 
@@ -134,7 +134,7 @@ $$\mathcal{L} = -\frac{1}{T-1}\sum_{t=1}^{T-1} \log p_\theta(x_{t+1} \mid x_{\le
 
 ### 5. Perplexity
 
-$$\text{PPL} = \exp\!\left(\frac{1}{N}\sum_{i=1}^{N} -\log p_\theta(x_i \mid x_{<i})\right)$$
+$$\text{PPL} = \exp\left(\frac{1}{N}\sum_{i=1}^{N} -\log p_\theta(x_i \mid x_{\lt i})\right)$$
 
 `evaluator.py` accumulates the summed negative log-likelihood and token count over the validation set and applies this formula. Lower is better. Perplexity is computed over all tokens, including system and user text, and sequences are truncated to `--max-len` (default 1024).
 
@@ -142,9 +142,9 @@ $$\text{PPL} = \exp\!\left(\frac{1}{N}\sum_{i=1}^{N} -\log p_\theta(x_i \mid x_{
 
 Instead of matching teacher logits, the student is trained with ordinary cross-entropy on text sampled from the teacher $p_T$:
 
-$$\hat{y} \sim p_T(\cdot \mid x), \qquad \min_\theta\; -\log p_\theta(\hat{y} \mid x).$$
+$$\hat{y} \sim p_T(\cdot \mid x), \qquad \min_\theta -\log p_\theta(\hat{y} \mid x).$$
 
-This approximates minimizing $\mathrm{KL}(p_T \,\|\, p_\theta)$ over sequences. It is simpler than logit-level distillation and needs only the teacher's generated text, not its logits.
+This approximates minimizing $\mathrm{KL}(p_T \Vert p_\theta)$ over sequences. It is simpler than logit-level distillation and needs only the teacher's generated text, not its logits.
 
 ---
 
