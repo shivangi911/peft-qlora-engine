@@ -1,0 +1,51 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "peft-engine"
+version = "0.1.0"
+description = "PEFT / QLoRA fine-tuning, sequence-level distillation and adapter fusion on Apple Silicon (MLX)"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "datasets>=2.19",
+    "pydantic>=2.6",
+    "pydantic-settings>=2.2",
+    "pyyaml>=6.0",
+    "numpy>=1.26",
+    "fastapi>=0.110",
+    "uvicorn>=0.29",
+]
+
+[project.optional-dependencies]
+mlx = [
+    "mlx>=0.22; sys_platform == 'darwin'",
+    "mlx-lm>=0.21; sys_platform == 'darwin'",
+]
+dev = [
+    "pytest>=8",
+    "httpx>=0.27",
+    "ruff>=0.4",
+    "mypy>=1.10",
+    "types-PyYAML",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.ruff]
+line-length = 100
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.mypy]
+python_version = "3.11"
+ignore_missing_imports = true
+warn_unused_ignores = true
