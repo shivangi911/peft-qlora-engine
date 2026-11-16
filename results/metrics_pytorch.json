@@ -1,0 +1,35 @@
+{
+  "base": {
+    "model": "Qwen/Qwen2.5-0.5B-Instruct",
+    "adapter": null,
+    "backend": "pytorch",
+    "device": "cpu",
+    "perplexity": 11.1763,
+    "eval_tokens": 6780,
+    "peak_memory_gb": 3.2,
+    "generation_tokens_per_sec": 10.83,
+    "machine": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "slimorca_ft": {
+    "model": "Qwen/Qwen2.5-0.5B-Instruct",
+    "adapter": "models/hf_adapters/slimorca",
+    "backend": "pytorch",
+    "device": "cpu",
+    "perplexity": 5.0575,
+    "eval_tokens": 6780,
+    "peak_memory_gb": 3.49,
+    "generation_tokens_per_sec": 9.89,
+    "machine": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  },
+  "distilled_ft": {
+    "model": "Qwen/Qwen2.5-0.5B-Instruct",
+    "adapter": "models/hf_adapters/distilled",
+    "backend": "pytorch",
+    "device": "cpu",
+    "perplexity": 7.2861,
+    "eval_tokens": 6780,
+    "peak_memory_gb": 4.78,
+    "generation_tokens_per_sec": 10.18,
+    "machine": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35"
+  }
+}
